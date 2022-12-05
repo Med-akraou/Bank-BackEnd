@@ -28,7 +28,7 @@ public class BankApplication {
 		SpringApplication.run(BankApplication.class, args);
 	}
 	
-	@Bean
+	//@Bean
 	CommandLineRunner start(BankAccountRepositery accountRepositery) {
 		return args ->{
 			BankAccount acc = accountRepositery.findById("679cecf7-0709-499b-beac-1c2aec6f7c21").orElse(null);
@@ -45,7 +45,7 @@ public class BankApplication {
 			System.out.println(acc.getClass().getSimpleName());
 		};
 	}
-	//@Bean
+	@Bean
 	CommandLineRunner start(CustomerRepositery customerRepositery, BankAccountRepositery accountRepositery, OperationRepositery operationRepositery) {
 		return args -> {
 			Stream.of("Hassan Chafi","Iman Hossni","Farid Majidi").forEach(name -> {
