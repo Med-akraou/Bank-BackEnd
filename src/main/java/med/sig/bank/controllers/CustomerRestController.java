@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import med.sig.bank.dtos.CustomerDTO;
-import med.sig.bank.servises.BankAccountService;
+import med.sig.bank.servises.CustmorService;
 
 @RestController
 @AllArgsConstructor
 @Slf4j
 public class CustomerRestController {
 
-	private BankAccountService bankAccountService;
+	private CustmorService bankAccountService;
 	
 	@PostMapping("/customers")
 	public CustomerDTO adCustomer(@RequestBody CustomerDTO customerDTO) {

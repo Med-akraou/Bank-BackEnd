@@ -17,17 +17,15 @@ import med.sig.bank.mappers.BankMapper;
 import med.sig.bank.repositeries.BankAccountRepositery;
 import med.sig.bank.repositeries.CustomerRepositery;
 import med.sig.bank.repositeries.OperationRepositery;
-import med.sig.bank.servises.BankAccountService;
+import med.sig.bank.servises.CustmorService;
 
 @Service
 @Transactional
 @AllArgsConstructor
 @Slf4j
-public class BankServiceImpl implements BankAccountService {
+public class CustomerServiceImpl implements CustmorService {
 
 	private CustomerRepositery customerRepositery;
-	private BankAccountRepositery bankAccountRepositery;
-	private OperationRepositery operationRepositery;
 	private BankMapper mapper;
 
 	@Override
@@ -46,56 +44,25 @@ public class BankServiceImpl implements BankAccountService {
 	}
 
 	@Override
-	public CustomerDTO getCustomer(Long id)  {
+	public CustomerDTO getCustomer(Long id) {
 		Customer customer = customerRepositery.findById(id)
-		.orElseThrow(()->  new NotFoundCustomerException("Customer not found"));
+				.orElseThrow(() -> new NotFoundCustomerException("Customer not found"));
 		return mapper.fromCustmor(customer);
 	}
-	
+
 	@Override
 	public CustomerDTO updateCostumer(CustomerDTO cuDto) {
 		log.info("update user");
 		Customer customer = mapper.fromCustomerDTO(cuDto);
 		return mapper.fromCustmor(customerRepositery.save(customer));
 	}
-	
+
 	@Override
 	public void deleteCustomer(Long id) {
 		Customer customer = customerRepositery.findById(id)
-				.orElseThrow(()->  new NotFoundCustomerException("Customer not found"));
+				.orElseThrow(() -> new NotFoundCustomerException("Customer not found"));
 		customerRepositery.delete(customer);
-		
-	}
-
-	@Override
-	public CurrentAccount saveCurrentAccount(double initialBalance, double overDraft, Long customerId) {
-
-		return null;
-	}
-
-	@Override
-	public SavingAccount saveSavingAccount(double initialBalance, double interestRate, Long customerId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void debit(String accountId, double amount, String description) {
-		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void credit(String accountId, double amount, String description) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void transfer(String accountIdSource, String accountIdDestination, double amount) {
-		
-
-	}
-
 
 }
