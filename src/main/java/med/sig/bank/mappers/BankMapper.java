@@ -3,6 +3,7 @@ package med.sig.bank.mappers;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import med.sig.bank.dtos.AccountOperationDTO;
 import med.sig.bank.dtos.CurrentAccountDTO;
 import med.sig.bank.dtos.CustomerDTO;
 import med.sig.bank.dtos.OperationDTO;
@@ -56,8 +57,8 @@ public class BankMapper {
 		return account;
 	}
 	
-	public OperationDTO fromOperation(Operation operation) {
-		OperationDTO operationDTO = new OperationDTO();
+	public AccountOperationDTO fromOperation(Operation operation) {
+		AccountOperationDTO operationDTO = new AccountOperationDTO();
 		BeanUtils.copyProperties(operation, operationDTO);
 		return operationDTO;
 	}

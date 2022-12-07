@@ -1,6 +1,5 @@
 package med.sig.bank;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -45,6 +44,7 @@ public class BankApplication {
 			System.out.println(acc.getClass().getSimpleName());
 		};
 	}
+	
 	@Bean
 	CommandLineRunner start(CustomerRepositery customerRepositery, BankAccountRepositery accountRepositery, OperationRepositery operationRepositery) {
 		return args ->{

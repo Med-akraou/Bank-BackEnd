@@ -1,13 +1,11 @@
 package med.sig.bank.dtos;
 
-import java.util.Date;
+import lombok.Data;
 
-import med.sig.bank.enums.OperationType;
-
+@Data
 public class OperationDTO {
-	private Long id;
-    private Date OperationDate;
-    private double amount;
-    private OperationType type;
-    private String descreption;
+
+	private String accountId;
+	private double amount;
+	private String description;
 }

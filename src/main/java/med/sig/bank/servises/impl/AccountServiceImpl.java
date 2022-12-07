@@ -6,11 +6,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import med.sig.bank.dtos.AccountHistoryDTO;
+import med.sig.bank.dtos.AccountOperationDTO;
 import med.sig.bank.dtos.BankAccountDTO;
 import med.sig.bank.dtos.CreateCurrentAccountDTO;
 import med.sig.bank.dtos.CreateSavingAccountDTO;
@@ -141,6 +145,22 @@ public class AccountServiceImpl implements AccountService {
 	public void transfer(String accountIdSource, String accountIdDestination, double amount) {
 		this.debit(accountIdSource, amount, "Tronsfer to "+accountIdDestination);
 		this.credit(accountIdDestination, amount, "Transfer from "+ accountIdSource);
+	}
+
+	@Override
+	public AccountHistoryDTO getAcoountHistory(String accountId, int page, int size) {
+		BankAccount account = bankAccountRepository.findById(accountId)
+				.orElseThrow(()-> new 
+						NotFoundAccountException("Account not found"));
+		Page<Operation> operations = bankAccountRepository.findByAccountIdOrderByOperationDateDesc(accountId,PageRequest.of(page, size));
+		AccountHistoryDTO accountHistoryDTO = new AccountHistoryDTO();
+		List<AccountOperationDTO> operationDto = operations.stream().map(op -> mapper.fromOperation(op)).collect(Collectors.toList());
+		accountHistoryDTO.setOperations(operationDto);
+		accountHistoryDTO.setBalance(account.getBalance());
+		accountHistoryDTO.setCurrentPage(page);
+		accountHistoryDTO.setSizePage(size);
+		accountHistoryDTO.setTotalPage(operations.getTotalPages());
+		return accountHistoryDTO;
 	}
 
 

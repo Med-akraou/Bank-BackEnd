@@ -6,14 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import med.sig.bank.dtos.AccountHistoryDTO;
 import med.sig.bank.dtos.BankAccountDTO;
 import med.sig.bank.dtos.CreateCurrentAccountDTO;
 import med.sig.bank.dtos.CreateSavingAccountDTO;
-import med.sig.bank.dtos.CreditDebitDTO;
+import med.sig.bank.dtos.OperationDTO;
 import med.sig.bank.dtos.CurrentAccountDTO;
 import med.sig.bank.dtos.SavingAccountDTO;
 import med.sig.bank.dtos.TransferDTO;
@@ -45,19 +47,28 @@ public class AccountCotroller {
 	public List<BankAccountDTO> listAccounts() {
 		return accountService.listAccounts();
 	}
-	
+
 	@PostMapping("/accounts/debit")
-	public void debit(@RequestBody CreditDebitDTO operation) {
+	public void debit(@RequestBody OperationDTO operation) {
 		accountService.debit(operation.getAccountId(), operation.getAmount(), operation.getDescription());
 	}
-	
+
 	@PostMapping("/accounts/credit")
-	public void credit(@RequestBody CreditDebitDTO operation) {
+	public void credit(@RequestBody OperationDTO operation) {
 		accountService.credit(operation.getAccountId(), operation.getAmount(), operation.getDescription());
 	}
-	
+
 	@PostMapping("/accounts/transfer")
 	public void transfer(@RequestBody TransferDTO transfer) {
 		accountService.transfer(transfer.getAccountSource(), transfer.getAccountDestination(), transfer.getAmount());
+	}
+
+	@GetMapping("/accounts/{id}/pageOperations")
+	public AccountHistoryDTO getAccountHistory(
+			@PathVariable String accountId,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size
+			) {
+           return accountService.getAcoountHistory(accountId, page, size);
 	}
 }

@@ -2,6 +2,7 @@ package med.sig.bank.servises;
 
 import java.util.List;
 
+import med.sig.bank.dtos.AccountHistoryDTO;
 import med.sig.bank.dtos.BankAccountDTO;
 import med.sig.bank.dtos.CreateCurrentAccountDTO;
 import med.sig.bank.dtos.CreateSavingAccountDTO;
@@ -23,5 +24,8 @@ public interface AccountService {
 	void credit(String accountId, double amount, String description);
 
 	void transfer(String accountIdSource, String accountIdDestination, double amount);
+	
+	public AccountHistoryDTO getAcoountHistory(String accountId, int page, int size);
+	
 
 }
