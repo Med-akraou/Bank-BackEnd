@@ -1,5 +1,8 @@
 package med.sig.bank.servises;
 
+import java.util.List;
+
+import med.sig.bank.dtos.BankAccountDTO;
 import med.sig.bank.dtos.CreateCurrentAccountDTO;
 import med.sig.bank.dtos.CreateSavingAccountDTO;
 import med.sig.bank.dtos.CurrentAccountDTO;
@@ -10,6 +13,10 @@ public interface AccountService {
 	CurrentAccountDTO saveCurrentAccount(CreateCurrentAccountDTO acc);
 
 	SavingAccountDTO saveSavingAccount(CreateSavingAccountDTO acc);
+	
+	BankAccountDTO getAccount(String id);
+	
+	List<BankAccountDTO> listAccounts();
 
 	void debit(String accountId, double amount, String description);
 

@@ -1,0 +1,11 @@
+package med.sig.bank.dtos;
+
+import lombok.Data;
+
+@Data
+public class CreditDebitDTO {
+
+	private String accountId;
+	private double amount;
+	private String description;
+}

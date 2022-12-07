@@ -47,7 +47,7 @@ public class BankApplication {
 	}
 	@Bean
 	CommandLineRunner start(CustomerRepositery customerRepositery, BankAccountRepositery accountRepositery, OperationRepositery operationRepositery) {
-		return args -> {
+		return args ->{
 			Stream.of("Hassan Chafi","Iman Hossni","Farid Majidi").forEach(name -> {
 				Customer c = new Customer();
 				c.setFirstname(name.split(" ")[0]);

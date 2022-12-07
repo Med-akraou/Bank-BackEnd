@@ -18,7 +18,7 @@ import med.sig.bank.servises.CustmorService;
 @RestController
 @AllArgsConstructor
 @Slf4j
-public class CustomerRestController {
+public class CustomerController {
 
 	private CustmorService bankAccountService;
 	
