@@ -30,9 +30,9 @@ import med.sig.bank.enums.OperationType;
 import med.sig.bank.exceptions.NotFoundAccountException;
 import med.sig.bank.exceptions.NotFoundCustomerException;
 import med.sig.bank.mappers.BankMapper;
-import med.sig.bank.repositeries.BankAccountRepositery;
+import med.sig.bank.repositeries.BankAccountRepository;
 import med.sig.bank.repositeries.CustomerRepositery;
-import med.sig.bank.repositeries.OperationRepositery;
+import med.sig.bank.repositeries.OperationRepository;
 import med.sig.bank.servises.AccountService;
 
 @AllArgsConstructor
@@ -42,8 +42,8 @@ import med.sig.bank.servises.AccountService;
 public class AccountServiceImpl implements AccountService {
 	
 	private CustomerRepositery customerRepository;
-	private BankAccountRepositery bankAccountRepository;
-	private OperationRepositery operationRepository;
+	private BankAccountRepository bankAccountRepository;
+	private OperationRepository operationRepository;
 	private BankMapper mapper;
 
 	@Override
@@ -116,7 +116,7 @@ public class AccountServiceImpl implements AccountService {
 		Operation operation = new Operation();
 		operation.setType(OperationType.DEBIT);
 		operation.setAmount(amount);
-		operation.setDescreption(description);
+		operation.setDescription(description);
 		operation.setOperationDate(new Date());
 		operation.setAccount(account);
 		operationRepository.save(operation);
@@ -132,7 +132,7 @@ public class AccountServiceImpl implements AccountService {
 		Operation operation = new Operation();
 		operation.setType(OperationType.CREDIT);
 		operation.setAmount(amount);
-		operation.setDescreption(description);
+		operation.setDescription(description);
 		operation.setOperationDate(new Date());
 		operation.setAccount(account);
 		operationRepository.save(operation);
@@ -148,11 +148,11 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public AccountHistoryDTO getAcoountHistory(String accountId, int page, int size) {
+	public AccountHistoryDTO getAccountHistory(String accountId, int page, int size) {
 		BankAccount account = bankAccountRepository.findById(accountId)
 				.orElseThrow(()-> new 
 						NotFoundAccountException("Account not found"));
-		Page<Operation> operations = bankAccountRepository.findByAccountIdOrderByOperationDateDesc(accountId,PageRequest.of(page, size));
+		Page<Operation> operations = operationRepository.findByAccountIdOrderByOperationDateDesc(accountId,PageRequest.of(page, size));
 		AccountHistoryDTO accountHistoryDTO = new AccountHistoryDTO();
 		List<AccountOperationDTO> operationDto = operations.stream().map(op -> mapper.fromOperation(op)).collect(Collectors.toList());
 		accountHistoryDTO.setOperations(operationDto);

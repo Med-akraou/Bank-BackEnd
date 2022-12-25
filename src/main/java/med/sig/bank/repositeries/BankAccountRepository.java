@@ -8,7 +8,6 @@ import med.sig.bank.entities.BankAccount;
 import med.sig.bank.entities.Operation;
 
 
-public interface BankAccountRepositery extends JpaRepository<BankAccount,String> {
+public interface BankAccountRepository extends JpaRepository<BankAccount,String> {
     
-	Page<Operation> findByAccountIdOrderByOperationDateDesc(String acountId,Pageable pageable);
 }

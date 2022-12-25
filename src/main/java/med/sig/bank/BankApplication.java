@@ -16,9 +16,9 @@ import med.sig.bank.entities.Operation;
 import med.sig.bank.entities.SavingAccount;
 import med.sig.bank.enums.AccountStatus;
 import med.sig.bank.enums.OperationType;
-import med.sig.bank.repositeries.BankAccountRepositery;
+import med.sig.bank.repositeries.BankAccountRepository;
 import med.sig.bank.repositeries.CustomerRepositery;
-import med.sig.bank.repositeries.OperationRepositery;
+import med.sig.bank.repositeries.OperationRepository;
 
 @SpringBootApplication
 public class BankApplication {
@@ -28,7 +28,7 @@ public class BankApplication {
 	}
 	
 	//@Bean
-	CommandLineRunner start(BankAccountRepositery accountRepositery) {
+	CommandLineRunner start(BankAccountRepository accountRepositery) {
 		return args ->{
 			BankAccount acc = accountRepositery.findById("679cecf7-0709-499b-beac-1c2aec6f7c21").orElse(null);
 			System.out.println("*************************");
@@ -46,7 +46,7 @@ public class BankApplication {
 	}
 	
 	@Bean
-	CommandLineRunner start(CustomerRepositery customerRepositery, BankAccountRepositery accountRepositery, OperationRepositery operationRepositery) {
+	CommandLineRunner start(CustomerRepositery customerRepositery, BankAccountRepository accountRepositery, OperationRepository operationRepositery) {
 		return args ->{
 			Stream.of("Hassan Chafi","Iman Hossni","Farid Majidi").forEach(name -> {
 				Customer c = new Customer();

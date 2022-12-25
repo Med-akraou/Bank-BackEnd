@@ -24,7 +24,7 @@ import med.sig.bank.servises.AccountService;
 @RestController
 @AllArgsConstructor
 @Slf4j
-public class AccountCotroller {
+public class AccountController {
 
 	private AccountService accountService;
 
@@ -63,12 +63,12 @@ public class AccountCotroller {
 		accountService.transfer(transfer.getAccountSource(), transfer.getAccountDestination(), transfer.getAmount());
 	}
 
-	@GetMapping("/accounts/{id}/pageOperations")
+	@GetMapping("/accounts/{accountId}/pageOperations")
 	public AccountHistoryDTO getAccountHistory(
 			@PathVariable String accountId,
 			@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "size", defaultValue = "10") int size
 			) {
-           return accountService.getAcoountHistory(accountId, page, size);
+           return accountService.getAccountHistory(accountId, page, size);
 	}
 }

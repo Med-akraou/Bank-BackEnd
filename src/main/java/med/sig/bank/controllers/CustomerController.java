@@ -23,7 +23,7 @@ public class CustomerController {
 	private CustmorService bankAccountService;
 	
 	@PostMapping("/customers")
-	public CustomerDTO adCustomer(@RequestBody CustomerDTO customerDTO) {
+	public CustomerDTO addCustomer(@RequestBody CustomerDTO customerDTO) {
 		return bankAccountService.saveCustomer(customerDTO);
 	}
 	
@@ -33,7 +33,7 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/customers")
-	public List<CustomerDTO> listCustmors(){
+	public List<CustomerDTO> listCustomer(){
 		return bankAccountService.litCustomers();
 	}
 	

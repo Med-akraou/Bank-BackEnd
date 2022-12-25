@@ -9,14 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import med.sig.bank.dtos.CustomerDTO;
-import med.sig.bank.entities.CurrentAccount;
 import med.sig.bank.entities.Customer;
-import med.sig.bank.entities.SavingAccount;
 import med.sig.bank.exceptions.NotFoundCustomerException;
 import med.sig.bank.mappers.BankMapper;
-import med.sig.bank.repositeries.BankAccountRepositery;
 import med.sig.bank.repositeries.CustomerRepositery;
-import med.sig.bank.repositeries.OperationRepositery;
 import med.sig.bank.servises.CustmorService;
 
 @Service

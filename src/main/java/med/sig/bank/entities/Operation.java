@@ -21,11 +21,12 @@ public class Operation {
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date OperationDate;
+    private Date operationDate;
     private double amount;
+    private String description;
     @Enumerated(EnumType.STRING)
     private OperationType type;
     @ManyToOne
     private BankAccount account;
-    private String descreption;
+
 }

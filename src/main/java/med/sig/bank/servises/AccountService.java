@@ -25,7 +25,7 @@ public interface AccountService {
 
 	void transfer(String accountIdSource, String accountIdDestination, double amount);
 	
-	public AccountHistoryDTO getAcoountHistory(String accountId, int page, int size);
+	public AccountHistoryDTO getAccountHistory(String accountId, int page, int size);
 	
 
 }
