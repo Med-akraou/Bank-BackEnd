@@ -1,0 +1,2 @@
+CREATE SCHEMA IF NOT EXISTS contacts AUTHORIZATION contacts;
+SET SCHEMA contacts;

@@ -2,49 +2,42 @@ package med.sig.bank.controllers;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import med.sig.bank.dtos.CustomerDTO;
-import med.sig.bank.servises.CustmorService;
+import med.sig.bank.servises.CustomerService;
 
 @RestController
 @AllArgsConstructor
 @Slf4j
 public class CustomerController {
 
-	private CustmorService bankAccountService;
+	private CustomerService customerService;
 	
 	@PostMapping("/customers")
 	public CustomerDTO addCustomer(@RequestBody CustomerDTO customerDTO) {
-		return bankAccountService.saveCustomer(customerDTO);
+		return customerService.saveCustomer(customerDTO);
 	}
 	
 	@GetMapping("/customers/{id}")
 	public CustomerDTO getCustomer(@PathVariable(name = "id") Long id) {
-		return bankAccountService.getCustomer(id);
+		return customerService.getCustomer(id);
 	}
 	
 	@GetMapping("/customers")
 	public List<CustomerDTO> listCustomer(){
-		return bankAccountService.litCustomers();
+		return customerService.litCustomers();
 	}
 	
-	@PatchMapping("/customers/{id}")
-	public CustomerDTO updateCustomer(@PathVariable(name = "id") Long id,@RequestBody CustomerDTO customerDTO) {
-		customerDTO.setId(id);
-		return bankAccountService.updateCostumer(customerDTO);
+	@PutMapping("/customers")
+	public CustomerDTO updateCustomer(@RequestBody CustomerDTO customerDTO) {
+		return customerService.updateCostumer(customerDTO);
 	}
 	
 	@DeleteMapping("/customers/{id}")
 	public void deleteCustomer(@PathVariable(name = "id") Long id) {
-		 bankAccountService.deleteCustomer(id);
+		 customerService.deleteCustomer(id);
 	}
 }

@@ -31,7 +31,7 @@ import med.sig.bank.exceptions.NotFoundAccountException;
 import med.sig.bank.exceptions.NotFoundCustomerException;
 import med.sig.bank.mappers.BankMapper;
 import med.sig.bank.repositeries.BankAccountRepository;
-import med.sig.bank.repositeries.CustomerRepositery;
+import med.sig.bank.repositeries.CustomerRepository;
 import med.sig.bank.repositeries.OperationRepository;
 import med.sig.bank.servises.AccountService;
 
@@ -41,7 +41,7 @@ import med.sig.bank.servises.AccountService;
 @Transactional
 public class AccountServiceImpl implements AccountService {
 	
-	private CustomerRepositery customerRepository;
+	private CustomerRepository customerRepository;
 	private BankAccountRepository bankAccountRepository;
 	private OperationRepository operationRepository;
 	private BankMapper mapper;

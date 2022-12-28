@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 import med.sig.bank.entities.BankAccount;
 import med.sig.bank.entities.CurrentAccount;
@@ -17,7 +16,7 @@ import med.sig.bank.entities.SavingAccount;
 import med.sig.bank.enums.AccountStatus;
 import med.sig.bank.enums.OperationType;
 import med.sig.bank.repositeries.BankAccountRepository;
-import med.sig.bank.repositeries.CustomerRepositery;
+import med.sig.bank.repositeries.CustomerRepository;
 import med.sig.bank.repositeries.OperationRepository;
 
 @SpringBootApplication
@@ -45,8 +44,8 @@ public class BankApplication {
 		};
 	}
 	
-	@Bean
-	CommandLineRunner start(CustomerRepositery customerRepositery, BankAccountRepository accountRepositery, OperationRepository operationRepositery) {
+	//@Bean
+	CommandLineRunner start(CustomerRepository customerRepository, BankAccountRepository accountRepositery, OperationRepository operationRepositery) {
 		return args ->{
 			Stream.of("Hassan Chafi","Iman Hossni","Farid Majidi").forEach(name -> {
 				Customer c = new Customer();
@@ -54,9 +53,9 @@ public class BankApplication {
 				c.setLastname(name.split(" ")[1]);
 				c.setEmail(name.replace(" ", "")+"@gmail.com");
 				c.setPhone("+212678932578");
-				customerRepositery.save(c);
+				customerRepository.save(c);
 			});
-		customerRepositery.findAll().forEach(custmer->{
+		customerRepository.findAll().forEach(custmer->{
 			CurrentAccount currentAccount = new CurrentAccount();
 			currentAccount.setId(UUID.randomUUID().toString());
 			currentAccount.setBalance(Math.random()*90000);

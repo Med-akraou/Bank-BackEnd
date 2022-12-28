@@ -1,6 +1,7 @@
 package med.sig.bank.servises.impl;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,52 +13,56 @@ import med.sig.bank.dtos.CustomerDTO;
 import med.sig.bank.entities.Customer;
 import med.sig.bank.exceptions.NotFoundCustomerException;
 import med.sig.bank.mappers.BankMapper;
-import med.sig.bank.repositeries.CustomerRepositery;
-import med.sig.bank.servises.CustmorService;
+import med.sig.bank.repositeries.CustomerRepository;
+import med.sig.bank.servises.CustomerService;
 
 @Service
 @Transactional
 @AllArgsConstructor
 @Slf4j
-public class CustomerServiceImpl implements CustmorService {
+public class CustomerServiceImpl implements CustomerService {
 
-	private CustomerRepositery customerRepositery;
+	private CustomerRepository customerRepository;
 	private BankMapper mapper;
 
 	@Override
-	public CustomerDTO saveCustomer(CustomerDTO costomerDTO) {
+	public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
 		log.info("saving new customer");
-		Customer customer = customerRepositery.save(mapper.fromCustomerDTO(costomerDTO));
-		return mapper.fromCustmor(customer);
+		Customer customer = mapper.toCustomer(customerDTO);
+		return mapper.toCustomerDto(customerRepository.save(customer));
 	}
 
 	@Override
 	public List<CustomerDTO> litCustomers() {
-		List<Customer> customers = customerRepositery.findAll();
-		List<CustomerDTO> customersDTO = customers.stream().map(customer -> mapper.fromCustmor(customer))
+		List<Customer> customers = customerRepository.findAll();
+		List<CustomerDTO> customersDTO = customers.stream().map(customer -> mapper.toCustomerDto(customer))
 				.collect(Collectors.toList());
 		return customersDTO;
 	}
 
 	@Override
 	public CustomerDTO getCustomer(Long id) {
-		Customer customer = customerRepositery.findById(id)
+		Customer customer = customerRepository.findById(id)
 				.orElseThrow(() -> new NotFoundCustomerException("Customer not found"));
-		return mapper.fromCustmor(customer);
+		return mapper.toCustomerDto(customer);
 	}
 
 	@Override
-	public CustomerDTO updateCostumer(CustomerDTO cuDto) {
+	public CustomerDTO updateCostumer(CustomerDTO customerDto) {
 		log.info("update user");
-		Customer customer = mapper.fromCustomerDTO(cuDto);
-		return mapper.fromCustmor(customerRepositery.save(customer));
+
+		Customer customer = customerRepository.findCustomerByEmail(customerDto.getEmail());
+
+		customer.setEmail(customerDto.getEmail());
+		customer.setPhone(customerDto.getPhone());
+		return mapper.toCustomerDto(customerRepository.save(customer));
 	}
 
 	@Override
 	public void deleteCustomer(Long id) {
-		Customer customer = customerRepositery.findById(id)
+		Customer customer = customerRepository.findById(id)
 				.orElseThrow(() -> new NotFoundCustomerException("Customer not found"));
-		customerRepositery.delete(customer);
+		customerRepository.delete(customer);
 
 	}
 
