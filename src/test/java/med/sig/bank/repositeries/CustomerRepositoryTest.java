@@ -2,6 +2,7 @@ package med.sig.bank.repositeries;
 
 import med.sig.bank.entities.Customer;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,31 +16,38 @@ class CustomerRepositoryTest {
     @Autowired
     CustomerRepository customerRepository;
 
+    private Customer customer;
 
-
-    @Test
-    void testSaveCustomer(){
-        Customer customer = new Customer();
+    @BeforeEach
+    void setUp(){
+        customer = new Customer();
         customer.setFirstname("Med");
         customer.setLastname("Med");
         customer.setEmail("med@gmail.com");
         customer.setPhone("+2126759943490");
+        customer.setCustomerId("customer_id");
+    }
+
+    @Test
+    void testSaveCustomer(){
         Customer savedCustomer = customerRepository.save(customer);
+        savedCustomer.setFirstname("ddddddddddd");
+        System.out.println("**********************");
+        System.out.println(savedCustomer);
+        System.out.println(customer);
+        System.out.println("***********************");
         Assertions.assertThat(savedCustomer).isEqualTo(customer);
     }
 
     @Test
-    void testRetrieveCustomerByEmail(){
-        String email = "med@gmail.com";
-        Customer customer = new Customer();
-        customer.setFirstname("Med");
-        customer.setLastname("Med");
-        customer.setEmail(email);
-        customer.setPhone("+2126759943490");
-        customerRepository.save(customer);
-        Assertions.assertThat(customerRepository.findCustomerByEmail(email)).isEqualTo(customer);
-        Assertions.assertThat(customerRepository.findCustomerByEmail("fakeemail@gmail.Com")).isNull();
-
+    void testRetrieveCustomerByCustomerId(){
+        //given
+        Customer savedCustomer = customerRepository.save(customer);
+        //when
+        String customerId = savedCustomer.getCustomerId();
+        //then
+        Assertions.assertThat(customerRepository.findCustomerByCustomerId(customerId)).isEqualTo(customer);
+        Assertions.assertThat(customerRepository.findCustomerByCustomerId("fake_customer_id")).isNull();
     }
 
     @Test
@@ -59,32 +67,22 @@ class CustomerRepositoryTest {
 
     @Test
     void testUpdateCustomer(){
-        String email = "med@gmail.com";
-        Customer customer = new Customer();
-        customer.setFirstname("Med");
-        customer.setLastname("Med");
-        customer.setEmail(email);
-        customer.setPhone("+2126759943490");
-        customerRepository.save(customer);
+
+        Customer savedCustomer = customerRepository.save(customer);
         String newPhone = "+212576767676";
         String newEmail = "newemail@gmail.com";
-        customer.setPhone(newPhone);
-        customer.setEmail(newEmail);
-        customerRepository.save(customer);
-        Customer updatedCustomer = customerRepository.findById(customer.getId()).get();
+        savedCustomer.setPhone(newPhone);
+        savedCustomer.setEmail(newEmail);
+        customerRepository.save(savedCustomer);
+        Customer updatedCustomer = customerRepository.findById(savedCustomer.getId()).get();
         Assertions.assertThat(updatedCustomer.getEmail()).isEqualTo(newEmail);
         Assertions.assertThat(updatedCustomer.getPhone()).isEqualTo(newPhone);
     }
 
     @Test
     void testDeleteCustomer(){
-      Customer customer = new Customer();
-      customer.setFirstname("Med");
-      customer.setLastname("Med");
-      customer.setEmail("med@gmail.com");
-      customer.setPhone("+2126759943490");
       customerRepository.save(customer);
-      customerRepository.deleteById(customer.getId());
+      customerRepository.delete(customer);
       Assertions.assertThat(customerRepository.findById(customer.getId())).isEmpty();
     }
 

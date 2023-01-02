@@ -24,6 +24,7 @@ public class Customer {
     private String firstname;
     private String lastname;
     private String email;
+    private String customerId;
     
     private String phone;
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)

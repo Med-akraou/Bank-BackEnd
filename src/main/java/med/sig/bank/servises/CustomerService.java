@@ -6,14 +6,14 @@ import med.sig.bank.dtos.CustomerDTO;
 
 public interface CustomerService {
 
-	CustomerDTO saveCustomer(CustomerDTO costomerDTO);
+	CustomerDTO saveCustomer(CustomerDTO customerDTO);
 
-	CustomerDTO getCustomer(Long id);
+	CustomerDTO getCustomer(String customerId);
 
 	List<CustomerDTO> litCustomers();
 
-	CustomerDTO updateCostumer(CustomerDTO cuDto);
+	CustomerDTO updateCostumer(String customerId,CustomerDTO cuDto);
 
-	void deleteCustomer(Long id);
+	void deleteCustomer(String customerId);
 
 }

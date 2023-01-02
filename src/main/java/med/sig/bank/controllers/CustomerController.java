@@ -21,9 +21,9 @@ public class CustomerController {
 		return customerService.saveCustomer(customerDTO);
 	}
 	
-	@GetMapping("/customers/{id}")
-	public CustomerDTO getCustomer(@PathVariable(name = "id") Long id) {
-		return customerService.getCustomer(id);
+	@GetMapping("/customers/{customerId}")
+	public CustomerDTO getCustomer(@PathVariable(name = "customerId") String customerId) {
+		return customerService.getCustomer(customerId);
 	}
 	
 	@GetMapping("/customers")
@@ -31,13 +31,13 @@ public class CustomerController {
 		return customerService.litCustomers();
 	}
 	
-	@PutMapping("/customers")
-	public CustomerDTO updateCustomer(@RequestBody CustomerDTO customerDTO) {
-		return customerService.updateCostumer(customerDTO);
+	@PutMapping("/customers/{customerId}")
+	public CustomerDTO updateCustomer(@PathVariable(name = "customerId") String customerId , @RequestBody CustomerDTO customerDTO) {
+		return customerService.updateCostumer(customerId,customerDTO);
 	}
 	
-	@DeleteMapping("/customers/{id}")
-	public void deleteCustomer(@PathVariable(name = "id") Long id) {
-		 customerService.deleteCustomer(id);
+	@DeleteMapping("/customers/{customerId}")
+	public void deleteCustomer(@PathVariable(name = "customerId") String customerId) {
+		 customerService.deleteCustomer(customerId);
 	}
 }
