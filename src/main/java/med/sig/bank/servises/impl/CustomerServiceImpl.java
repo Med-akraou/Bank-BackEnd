@@ -33,18 +33,16 @@ public class CustomerServiceImpl implements CustomerService {
 	 */
 	@Override
 	public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
-		log.info("saving new customer");
 		customerDTO.setCustomerId(UUID.randomUUID().toString());
+		log.info("saving new customer {}", customerDTO);
 		Customer customer = customerMapper.toCustomer(customerDTO);
 		return customerMapper.toCustomerDto(customerRepository.save(customer));
 	}
 
-	/**
-	 * @return list of the customers
-	 */
+
 	@Override
 	public List<CustomerDTO> litCustomers() {
-		log.info("get customers list");
+		log.info("Get customers list");
 		List<Customer> customers = customerRepository.findAll();
 		List<CustomerDTO> customersDTO = customerMapper.toCustomerDtos(customers);
 		return customersDTO;
@@ -53,8 +51,11 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public CustomerDTO getCustomer(String customerId) {
 		Customer customer = customerRepository.findCustomerByCustomerId(customerId);
-		if (customer == null)
+		if (customer == null){
+			log.warn("Customer with {} does not exist",customerId);
 			throw new NotFoundCustomerException("Customer not found");
+		}
+		log.info("get customer with id {}",customerId);
 		return customerMapper.toCustomerDto(customer);
 	}
 
@@ -62,8 +63,10 @@ public class CustomerServiceImpl implements CustomerService {
 	public CustomerDTO updateCostumer(String customerId, CustomerDTO customerDto) {
 		log.info("update user");
 		Customer customer = customerRepository.findCustomerByCustomerId(customerId);
-		if (customer == null)
+		if (customer == null){
+			log.warn("Customer with {} does not exist",customerId);
 			throw new NotFoundCustomerException("Customer not found");
+		}
 		BeanUtils.copyProperties(customerDto,customer);
 		customer.setCustomerId(customerId);
 		return customerMapper.toCustomerDto(customerRepository.save(customer));
@@ -72,9 +75,11 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public void deleteCustomer(String customerId) {
 		Customer customer = customerRepository.findCustomerByCustomerId(customerId);
-		if (customer == null)
+		if (customer == null){
+			log.warn("you are trying to delete a customer that does not exist");
 			throw new NotFoundCustomerException("Customer not found");
-		log.info("delete user");
+		}
+		log.info("delete customer {} ",customer);
 		customerRepository.delete(customer);
 	}
 

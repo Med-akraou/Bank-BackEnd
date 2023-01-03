@@ -22,7 +22,7 @@ public class BankAccount {
     private Date createAt;
     private AccountStatus status; 
      
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Customer customer;
 
 
