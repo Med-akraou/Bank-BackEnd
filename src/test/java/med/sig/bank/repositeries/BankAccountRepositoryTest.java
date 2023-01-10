@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -17,6 +18,8 @@ class BankAccountRepositoryTest {
 
     @Autowired
     private BankAccountRepository bankAccountRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
 
     @Test
@@ -33,7 +36,8 @@ class BankAccountRepositoryTest {
         savingAccount.setCreateAt(new Date());
         savingAccount.setCustomer(customer);
         savingAccount.setInterestRate(23.23);
-        BankAccount savedSavingAccount = bankAccountRepository.save(savingAccount);
+        customerRepository.save(customer);
+        SavingAccount savedSavingAccount = bankAccountRepository.save(savingAccount);
         Assertions.assertThat(savedSavingAccount).isEqualTo(savingAccount);
         Assertions.assertThat(savedSavingAccount.getBalance()).isEqualTo(savingAccount.getBalance());
         Assertions.assertThat(savedSavingAccount.getCreateAt()).isEqualTo(savingAccount.getCreateAt());
@@ -42,7 +46,8 @@ class BankAccountRepositoryTest {
         System.out.println(savingAccount.getCustomer());
         System.out.println(savedSavingAccount.getCustomer());
         System.out.println("************************");
-        //Assertions.assertThat(savedSavingAccount.getCustomer()).isEqualTo(customer);
+        Assertions.assertThat(savedSavingAccount.getCustomer()).isEqualTo(customer);
+
     }
 
     @Test

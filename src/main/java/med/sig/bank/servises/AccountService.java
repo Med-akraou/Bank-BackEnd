@@ -4,8 +4,8 @@ import java.util.List;
 
 import med.sig.bank.dtos.AccountHistoryDTO;
 import med.sig.bank.dtos.BankAccountDTO;
-import med.sig.bank.dtos.CreateCurrentAccountDTO;
-import med.sig.bank.dtos.CreateSavingAccountDTO;
+import med.sig.bank.dtos.CurrentAccountRequest;
+import med.sig.bank.dtos.SavingAccountRequest;
 import med.sig.bank.dtos.CurrentAccountDTO;
 import med.sig.bank.dtos.SavingAccountDTO;
 
@@ -16,14 +16,14 @@ public interface AccountService {
 	 * @param acc Current account to add
 	 * @return the added current account
 	 */
-	CurrentAccountDTO saveCurrentAccount(CreateCurrentAccountDTO acc);
+	CurrentAccountDTO saveCurrentAccount(CurrentAccountRequest acc);
 
 	/**
 	 * Add new saving account
 	 * @param acc Saving Account to save
 	 * @return the added saving account
 	 */
-	SavingAccountDTO saveSavingAccount(CreateSavingAccountDTO acc);
+	SavingAccountDTO saveSavingAccount(SavingAccountRequest acc);
 
 	/**
 	 * Get account by id

@@ -31,6 +31,7 @@ class CustomerRepositoryTest {
     @Test
     void testSaveCustomer(){
         Customer savedCustomer = customerRepository.save(customer);
+        System.out.println("**********************");
         savedCustomer.setFirstname("ddddddddddd");
         System.out.println("**********************");
         System.out.println(savedCustomer);

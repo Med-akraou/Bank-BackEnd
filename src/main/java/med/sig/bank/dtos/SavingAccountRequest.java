@@ -3,10 +3,10 @@ package med.sig.bank.dtos;
 import lombok.Data;
 
 @Data
-public class CreateCurrentAccountDTO {
-
-	private double balance; 
-	private double overDraft; 
-	private Long customerId;
+public class SavingAccountRequest {
 	
+	private double balance; 
+	private double interestRate; 
+	private Long customerId;
+
 }

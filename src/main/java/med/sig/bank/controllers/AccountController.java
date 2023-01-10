@@ -13,8 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import med.sig.bank.dtos.AccountHistoryDTO;
 import med.sig.bank.dtos.BankAccountDTO;
-import med.sig.bank.dtos.CreateCurrentAccountDTO;
-import med.sig.bank.dtos.CreateSavingAccountDTO;
+import med.sig.bank.dtos.CurrentAccountRequest;
+import med.sig.bank.dtos.SavingAccountRequest;
 import med.sig.bank.dtos.OperationDTO;
 import med.sig.bank.dtos.CurrentAccountDTO;
 import med.sig.bank.dtos.SavingAccountDTO;
@@ -29,12 +29,12 @@ public class AccountController {
 	private AccountService accountService;
 
 	@PostMapping("/saveCurrentAccount")
-	public CurrentAccountDTO createCurrentAccount(@RequestBody CreateCurrentAccountDTO acc) {
+	public CurrentAccountDTO createCurrentAccount(@RequestBody CurrentAccountRequest acc) {
 		return accountService.saveCurrentAccount(acc);
 	}
 
 	@PostMapping("/saveSavingAccount")
-	public SavingAccountDTO createSavingAccount(@RequestBody CreateSavingAccountDTO acc) {
+	public SavingAccountDTO createSavingAccount(@RequestBody SavingAccountRequest acc) {
 		return accountService.saveSavingAccount(acc);
 	}
 

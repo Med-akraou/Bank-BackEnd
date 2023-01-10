@@ -63,23 +63,24 @@ public class CustomerServiceImpl implements CustomerService {
 	public CustomerDTO updateCostumer(String customerId, CustomerDTO customerDto) {
 		log.info("update user");
 		Customer customer = customerRepository.findCustomerByCustomerId(customerId);
-		if (customer == null){
-			log.warn("Customer with {} does not exist",customerId);
-			throw new NotFoundCustomerException("Customer not found");
+		if (null != customer) {
+			BeanUtils.copyProperties(customerDto,customer);
+			customer.setCustomerId(customerId);
+			return customerMapper.toCustomerDto(customerRepository.save(customer));
 		}
-		BeanUtils.copyProperties(customerDto,customer);
-		customer.setCustomerId(customerId);
-		return customerMapper.toCustomerDto(customerRepository.save(customer));
+
+		log.error("Customer with id {} does not exist",customerId);
+		throw new NotFoundCustomerException("Customer not found");
 	}
 
 	@Override
 	public void deleteCustomer(String customerId) {
 		Customer customer = customerRepository.findCustomerByCustomerId(customerId);
 		if (customer == null){
-			log.warn("you are trying to delete a customer that does not exist");
+			log.error("you are trying to delete a customer that does not exist");
 			throw new NotFoundCustomerException("Customer not found");
 		}
-		log.info("delete customer {} ",customer);
+		log.info("delete customer {} "  , customer);
 		customerRepository.delete(customer);
 	}
 

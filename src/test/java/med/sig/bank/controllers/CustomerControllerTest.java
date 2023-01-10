@@ -46,7 +46,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void testAddCustomer() throws Exception {
+    void shouldAddNewCustomer() throws Exception {
         BDDMockito.given(customerService.saveCustomer(ArgumentMatchers.any())).willReturn(customerDTO);
         mockMvc.perform(MockMvcRequestBuilders.post("/customers").contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(customerDTO)))
@@ -56,15 +56,13 @@ class CustomerControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("lastname").value("Med"))
                 .andExpect(MockMvcResultMatchers.jsonPath("email").value("med@gmail.com"))
                 .andExpect(MockMvcResultMatchers.jsonPath("phone").value("+212587498733"));
-
     }
 
     @Test
-    void getCustomer() throws Exception {
+    void shouldReturnCustomer() throws Exception {
         //given
         String customerId = "customerId";
         BDDMockito.given(customerService.getCustomer(customerId)).willReturn(customerDTO);
-        BDDMockito.given(customerService.getCustomer("fake-customer-id")).willThrow(NotFoundCustomerException.class);
 
         //when then
         mockMvc.perform(MockMvcRequestBuilders.get("/customers/{customerId}",customerId))
@@ -73,12 +71,20 @@ class CustomerControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("lastname").value("Med"))
                 .andExpect(MockMvcResultMatchers.jsonPath("email").value("med@gmail.com"));
 
+    }
+
+    @Test
+    void shouldThrowNotFoundCustomer() throws Exception {
+        //given
+        BDDMockito.given(customerService.getCustomer("fake-customer-id")).willThrow(NotFoundCustomerException.class);
+
+        //when, then
         mockMvc.perform(MockMvcRequestBuilders.get("/customers/{customerId}","fake-customer-id"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
-    void testListCustomer() throws Exception {
+    void shouldReturnListOfCustomers() throws Exception {
         //given
         List<CustomerDTO> customersDto = new ArrayList<>();
         Stream.of("Hassan Chafi","Iman Hossni","Farid Majidi").forEach(name->{
@@ -98,12 +104,11 @@ class CustomerControllerTest {
     }
 
     @Test
-    void testUpdateCustomer() throws Exception {
+    void shouldUpdateCustomer() throws Exception {
 
         //given
         String customerId = "customerId";
         BDDMockito.given(customerService.updateCostumer(customerId,customerDTO)).willReturn(customerDTO);
-        BDDMockito.given(customerService.updateCostumer("fake-customer-id",customerDTO)).willThrow(NotFoundCustomerException.class);
 
         //when then
         mockMvc.perform(MockMvcRequestBuilders.put("/customers/{customerId}",customerId).contentType(MediaType.APPLICATION_JSON)
@@ -116,21 +121,34 @@ class CustomerControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("phone").value("+212587498733"));
         Mockito.verify(customerService).updateCostumer(customerId,customerDTO);
 
+    }
+    @Test
+    void when_update_shouldThrowNotFoundCustomer() throws Exception {
+        BDDMockito.given(customerService.updateCostumer("fake-customer-id",customerDTO)).willThrow(NotFoundCustomerException.class);
         mockMvc.perform(MockMvcRequestBuilders.put("/customers/{customerId}","fake-customer-id").contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(customerDTO)))
+                        .content(mapper.writeValueAsString(customerDTO)))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
-
     }
 
     @Test
-    void deleteCustomer() throws Exception {
+    void shouldDeleteCustomer() throws Exception {
+        //given
         String customerId = "customerId";
         Mockito.doNothing().when(customerService).deleteCustomer(customerDTO.getCustomerId());
-        Mockito.doThrow(NotFoundCustomerException.class).when(customerService).deleteCustomer("fake-customer-id");
+
+        //when then
         mockMvc.perform(MockMvcRequestBuilders.delete("/customers/{customerId}",customerId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+        Mockito.verify(customerService).deleteCustomer(customerId);
+    }
+
+    @Test
+    void when_delete_shouldThrowNotFoundCustomer() throws Exception {
+        //when
+        Mockito.doThrow(NotFoundCustomerException.class).when(customerService).deleteCustomer("fake-customer-id");
+
+        //when then
         mockMvc.perform(MockMvcRequestBuilders.delete("/customers/{customerId}","fake-customer-id"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
-        Mockito.verify(customerService).deleteCustomer(customerId);
     }
 }

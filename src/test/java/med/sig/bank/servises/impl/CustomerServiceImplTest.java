@@ -49,7 +49,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should create a new Department")
+    @DisplayName("Should create a new ")
     void testSaveCustomer() {
         //given
         Customer customer = new Customer();

@@ -13,13 +13,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import med.sig.bank.dtos.AccountHistoryDTO;
 import med.sig.bank.dtos.AccountOperationDTO;
 import med.sig.bank.dtos.BankAccountDTO;
-import med.sig.bank.dtos.CreateCurrentAccountDTO;
-import med.sig.bank.dtos.CreateSavingAccountDTO;
+import med.sig.bank.dtos.CurrentAccountRequest;
+import med.sig.bank.dtos.SavingAccountRequest;
 import med.sig.bank.dtos.CurrentAccountDTO;
 import med.sig.bank.dtos.SavingAccountDTO;
 import med.sig.bank.entities.BankAccount;
@@ -49,24 +48,23 @@ public class AccountServiceImpl implements AccountService {
 	private final BankMapper mapper;
 
 	@Override
-	public CurrentAccountDTO saveCurrentAccount(CreateCurrentAccountDTO acc) {
+	public CurrentAccountDTO saveCurrentAccount(CurrentAccountRequest acc) {
 		Customer customer=customerRepository.findById(acc.getCustomerId()).orElse(null);
-        if(customer==null)
+        if(customer == null)
             throw new NotFoundCustomerException("Customer not found");
 		log.info("Creating new Current Account for customer {} {}", customer.getFirstname(),customer.getLastname());
-        CurrentAccount currentAccount=new CurrentAccount();
+        CurrentAccount currentAccount = new CurrentAccount();
         BeanUtils.copyProperties(acc, currentAccount);
         currentAccount.setId(UUID.randomUUID().toString());
         currentAccount.setCreateAt(new Date());
         currentAccount.setStatus(AccountStatus.CREATED);
         currentAccount.setCustomer(customer);
-        CurrentAccount savedBankAccount = bankAccountRepository.save(currentAccount);
 		log.info("Account Created");
-        return mapper.toCurrentAccountDTO(savedBankAccount);
+        return mapper.toCurrentAccountDTO(bankAccountRepository.save(currentAccount));
 	}
 
 	@Override
-	public SavingAccountDTO saveSavingAccount(CreateSavingAccountDTO acc) {
+	public SavingAccountDTO saveSavingAccount(SavingAccountRequest acc) {
 		Customer customer=customerRepository.findById(acc.getCustomerId()).orElse(null);
         if(customer==null)
             throw new NotFoundCustomerException("Customer not found");
@@ -120,10 +118,11 @@ public class AccountServiceImpl implements AccountService {
 	public void debit(String accountId, double amount, String description) {
 		BankAccount account = bankAccountRepository.findById(accountId)
 				.orElseThrow(()-> new NotFoundAccountException("Account not found"));
-		if(account.getBalance()<amount){
+		if(account.getBalance() < amount){
 			log.warn("Balance not sufficient");
 			throw new BalanceNotSufficientException("Balance not sufficient");
 		}
+
         log.info("debit account");
 		Operation operation = new Operation();
 		operation.setType(OperationType.DEBIT);
@@ -134,6 +133,7 @@ public class AccountServiceImpl implements AccountService {
 		operationRepository.save(operation);
 		account.setBalance(account.getBalance()-amount);
 		bankAccountRepository.save(account);
+
 		
 	}
 
