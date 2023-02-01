@@ -26,6 +26,7 @@ class CustomerRepositoryTest {
         customer.setEmail("med@gmail.com");
         customer.setPhone("+2126759943490");
         customer.setCustomerId("customer_id");
+        customerRepository.deleteAll();
     }
 
     @Test

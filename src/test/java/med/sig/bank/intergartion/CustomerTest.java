@@ -2,10 +2,12 @@ package med.sig.bank.intergartion;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import med.sig.bank.dtos.CustomerDTO;
+import med.sig.bank.entities.Customer;
 import med.sig.bank.repositeries.CustomerRepository;
 import med.sig.bank.servises.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -32,20 +36,24 @@ public class CustomerTest {
    @Autowired
     CustomerService customerService;
 
-   private CustomerDTO customerDTO;
+   private Customer customer = new Customer();
+   private CustomerDTO customerDTO = new CustomerDTO();
 
    private ObjectMapper jsonMapper = new ObjectMapper();
 
    @BeforeEach
    void setUp(){
-       customerDTO = new CustomerDTO();
-       customerDTO.setLastname("Med");
-       customerDTO.setFirstname("Med");
-       customerDTO.setEmail("med@gmail.com");
-       customerDTO.setPhone("+212587498733");
+       customer.setLastname("Med");
+       customer.setFirstname("Med");
+       customer.setCustomerId("customerId");
+       customer.setEmail("med@gmail.com");
+       customer.setPhone("+212587498733");
+       BeanUtils.copyProperties(customer,customerDTO);
+       customerRepository.deleteAll();
    }
 
     @Test
+    @Transactional
     void shouldAddNewCustomer() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/customers").contentType(MediaType.APPLICATION_JSON)
                         .content(jsonMapper.writeValueAsString(customerDTO)))
@@ -58,8 +66,20 @@ public class CustomerTest {
     }
 
     @Test
+    @Transactional
+    void shouldThrowCustomerAlreadyExsistException() throws Exception {
+        customerRepository.save(customer);
+        mockMvc.perform(MockMvcRequestBuilders.post("/customers").contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(customerDTO)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo("Customer is already registered"));
+                ;
+    }
+
+    @Test
+    @Transactional
     void shouldReturnCustomer() throws Exception {
-       String customerId = customerService.saveCustomer(customerDTO).getCustomerId();
+       String customerId = customerRepository.save(customer).getCustomerId();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/customers/{customerId}",customerId))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -71,6 +91,7 @@ public class CustomerTest {
     }
 
     @Test
+    @Transactional
     void shouldThrowNotFoundCustomer() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/customers/{customerId}","fake-customer-id"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -78,6 +99,7 @@ public class CustomerTest {
     }
 
     @Test
+    @Transactional
     void shouldReturn_listCustomers() throws Exception {
        customerService.saveCustomer(customerDTO);
        CustomerDTO other = new CustomerDTO();
@@ -90,7 +112,7 @@ public class CustomerTest {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].firstname", is(customerDTO.getFirstname())))
+                .andExpect(jsonPath("$[0].firstname").value(customerDTO.getFirstname()))
                 .andExpect(jsonPath("$[0].lastname", is(customerDTO.getLastname())))
                 .andExpect(jsonPath("$[0].email", is(customerDTO.getEmail())))
                 .andExpect(jsonPath("$[0].phone", is(customerDTO.getPhone())))
@@ -106,6 +128,7 @@ public class CustomerTest {
     }
 
     @Test
+    @Transactional
     void shouldUpdateCustomer() throws Exception {
        //given
        String customerId = customerService.saveCustomer(customerDTO).getCustomerId();
@@ -125,6 +148,7 @@ public class CustomerTest {
     }
 
     @Test
+    @Transactional
     void shouldDeleteCostumer() throws Exception {
         String customerId = customerService.saveCustomer(customerDTO).getCustomerId();
         mockMvc.perform(MockMvcRequestBuilders.delete("/customers/{customerId}",customerId))
@@ -132,6 +156,7 @@ public class CustomerTest {
     }
 
     @Test
+    @Transactional
     void shouldReturn_notFoundCustomer() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/customers/{customerId}","fake-customerId"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());

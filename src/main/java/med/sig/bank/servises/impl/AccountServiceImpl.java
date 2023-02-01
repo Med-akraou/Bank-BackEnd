@@ -1,33 +1,13 @@
 package med.sig.bank.servises.impl;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
-import med.sig.bank.exceptions.BalanceNotSufficientException;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.extern.slf4j.Slf4j;
-import med.sig.bank.dtos.AccountHistoryDTO;
-import med.sig.bank.dtos.AccountOperationDTO;
-import med.sig.bank.dtos.BankAccountDTO;
-import med.sig.bank.dtos.CurrentAccountRequest;
-import med.sig.bank.dtos.SavingAccountRequest;
-import med.sig.bank.dtos.CurrentAccountDTO;
-import med.sig.bank.dtos.SavingAccountDTO;
-import med.sig.bank.entities.BankAccount;
-import med.sig.bank.entities.CurrentAccount;
-import med.sig.bank.entities.Customer;
-import med.sig.bank.entities.Operation;
-import med.sig.bank.entities.SavingAccount;
+import med.sig.bank.dtos.*;
+import med.sig.bank.entities.*;
 import med.sig.bank.enums.AccountStatus;
 import med.sig.bank.enums.OperationType;
+import med.sig.bank.exceptions.BalanceNotSufficientException;
+import med.sig.bank.exceptions.NotActivatedAccountException;
 import med.sig.bank.exceptions.NotFoundAccountException;
 import med.sig.bank.exceptions.NotFoundCustomerException;
 import med.sig.bank.mappers.BankMapper;
@@ -35,6 +15,15 @@ import med.sig.bank.repositeries.BankAccountRepository;
 import med.sig.bank.repositeries.CustomerRepository;
 import med.sig.bank.repositeries.OperationRepository;
 import med.sig.bank.servises.AccountService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -48,33 +37,27 @@ public class AccountServiceImpl implements AccountService {
 	private final BankMapper mapper;
 
 	@Override
-	public CurrentAccountDTO saveCurrentAccount(CurrentAccountRequest acc) {
-		Customer customer=customerRepository.findById(acc.getCustomerId()).orElse(null);
+	public CurrentAccountDTO saveCurrentAccount(String customerId,double balance, double overDraft) {
+		Customer customer=customerRepository.findCustomerByCustomerId(customerId);
         if(customer == null)
             throw new NotFoundCustomerException("Customer not found");
 		log.info("Creating new Current Account for customer {} {}", customer.getFirstname(),customer.getLastname());
         CurrentAccount currentAccount = new CurrentAccount();
-        BeanUtils.copyProperties(acc, currentAccount);
-        currentAccount.setId(UUID.randomUUID().toString());
-        currentAccount.setCreateAt(new Date());
-        currentAccount.setStatus(AccountStatus.CREATED);
-        currentAccount.setCustomer(customer);
+        currentAccount.setOverDraft(overDraft);
+		fillAccount(currentAccount,balance,customer);
 		log.info("Account Created");
         return mapper.toCurrentAccountDTO(bankAccountRepository.save(currentAccount));
 	}
 
 	@Override
-	public SavingAccountDTO saveSavingAccount(SavingAccountRequest acc) {
-		Customer customer=customerRepository.findById(acc.getCustomerId()).orElse(null);
+	public SavingAccountDTO saveSavingAccount(String customerId,double balance, double interestRate) {
+		Customer customer=customerRepository.findCustomerByCustomerId(customerId);
         if(customer==null)
             throw new NotFoundCustomerException("Customer not found");
 		log.info("Creating new Saving Account for user {} {}",customer.getFirstname(),customer.getLastname());
         SavingAccount savingAccount=new SavingAccount();
-        BeanUtils.copyProperties(acc, savingAccount);
-        savingAccount.setId(UUID.randomUUID().toString());
-        savingAccount.setCreateAt(new Date());
-        savingAccount.setStatus(AccountStatus.CREATED);
-        savingAccount.setCustomer(customer);
+        savingAccount.setInterestRate(interestRate);
+		fillAccount(savingAccount, balance, customer);
         SavingAccount savedBankAccount = bankAccountRepository.save(savingAccount);
 		log.info("Account created");
         return mapper.toSavingAccountDTO(savedBankAccount);
@@ -118,46 +101,39 @@ public class AccountServiceImpl implements AccountService {
 	public void debit(String accountId, double amount, String description) {
 		BankAccount account = bankAccountRepository.findById(accountId)
 				.orElseThrow(()-> new NotFoundAccountException("Account not found"));
-		if(account.getBalance() < amount){
-			log.warn("Balance not sufficient");
-			throw new BalanceNotSufficientException("Balance not sufficient");
+		if(account.getStatus()==AccountStatus.ACTIVATED){
+			if(account.getBalance() < amount){
+				log.warn("Balance not sufficient");
+				throw new BalanceNotSufficientException("Balance not sufficient");
+			}
+			log.info("debit account");
+			operationRepository.save(makeOperation(OperationType.DEBIT,amount,description,account));
+			account.setBalance(account.getBalance()-amount);
+			bankAccountRepository.save(account);
 		}
+		else
+			throw new NotActivatedAccountException("This account is not activated yet");
 
-        log.info("debit account");
-		Operation operation = new Operation();
-		operation.setType(OperationType.DEBIT);
-		operation.setAmount(amount);
-		operation.setDescription(description);
-		operation.setOperationDate(new Date());
-		operation.setAccount(account);
-		operationRepository.save(operation);
-		account.setBalance(account.getBalance()-amount);
-		bankAccountRepository.save(account);
-
-		
 	}
+
 
 	@Override
 	public void credit(String accountId, double amount, String description) {
 		BankAccount account = bankAccountRepository.findById(accountId)
 				.orElseThrow(()-> new NotFoundAccountException("Account not found"));
-		log.info("credit account");
-		Operation operation = new Operation();
-		operation.setType(OperationType.CREDIT);
-		operation.setAmount(amount);
-		operation.setDescription(description);
-		operation.setOperationDate(new Date());
-		operation.setAccount(account);
-		operationRepository.save(operation);
-		account.setBalance(account.getBalance()+amount);
-		bankAccountRepository.save(account);
-
+		if(account.getStatus()==AccountStatus.ACTIVATED){
+			log.info("credit account");
+			operationRepository.save(makeOperation(OperationType.CREDIT,amount,description,account));
+			account.setBalance(account.getBalance()+amount);
+			bankAccountRepository.save(account);
+		}
+		else throw new NotActivatedAccountException("This account is not activated yet");
 	}
 
 	@Override
 	public void transfer(String accountIdSource, String accountIdDestination, double amount) {
 		log.info("transfer operation from account with id {} to account with id {}",accountIdSource,accountIdDestination);
-		this.debit(accountIdSource, amount, "Tronsfer to "+accountIdDestination);
+		this.debit(accountIdSource, amount, "Transfer to "+accountIdDestination);
 		this.credit(accountIdDestination, amount, "Transfer from "+ accountIdSource);
 		log.info("validated transfer");
 	}
@@ -178,6 +154,25 @@ public class AccountServiceImpl implements AccountService {
 		accountHistoryDTO.setTotalPage(operations.getTotalPages());
 		return accountHistoryDTO;
 	}
+
+
+		private Operation makeOperation(OperationType type, double amount,String description, BankAccount account) {
+			Operation operation = new Operation();
+			operation.setType(type);
+			operation.setAmount(amount);
+			operation.setDescription(description);
+			operation.setOperationDate(new Date());
+			operation.setAccount(account);
+			return  operation;
+		}
+
+		private void fillAccount(BankAccount account, double balance, Customer customer){
+		   account.setBalance(balance);
+		   account.setCustomer(customer);
+		   account.setId(UUID.randomUUID().toString());
+		   account.setCreateAt(new Date());
+		   account.setStatus(AccountStatus.CREATED);
+		}
 
 
 }

@@ -7,6 +7,6 @@ public class SavingAccountRequest {
 	
 	private double balance; 
 	private double interestRate; 
-	private Long customerId;
+	private String customerId;
 
 }

@@ -19,6 +19,7 @@ public class BankAccount {
     @Id
     private String id;
     private double balance;
+    @Temporal(TemporalType.DATE)
     private Date createAt;
     private AccountStatus status; 
      

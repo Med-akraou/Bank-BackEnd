@@ -3,7 +3,7 @@ package med.sig.bank;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Stream;
-
+import med.sig.bank.dtos.City;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,8 +18,14 @@ import med.sig.bank.enums.OperationType;
 import med.sig.bank.repositeries.BankAccountRepository;
 import med.sig.bank.repositeries.CustomerRepository;
 import med.sig.bank.repositeries.OperationRepository;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
+@RestController()
+@CrossOrigin("*")
 public class BankApplication {
 
 	public static void main(String[] args) {
@@ -86,8 +92,18 @@ public class BankApplication {
 			}
 			
 		});
+			System.out.println("************************");
+		accountRepositery.findAll().forEach(c-> System.out.println(c.getCreateAt()));
 		
 		};
+	}
+
+	@PostMapping("/api/v1/ms-eligibility/ftth")
+	 City send(@RequestBody City o){
+		System.out.println("********************");
+		System.out.println(o);
+		//throw new NotFoundCustomerException("sss");
+		return o;
 	}
 
 }

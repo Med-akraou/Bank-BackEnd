@@ -7,6 +7,6 @@ public class CurrentAccountRequest {
 
 	private double balance; 
 	private double overDraft; 
-	private Long customerId;
+	private String customerId;
 	
 }

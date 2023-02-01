@@ -16,14 +16,14 @@ public interface AccountService {
 	 * @param acc Current account to add
 	 * @return the added current account
 	 */
-	CurrentAccountDTO saveCurrentAccount(CurrentAccountRequest acc);
+	CurrentAccountDTO saveCurrentAccount(String customerId,double balance, double overDraft);
 
 	/**
 	 * Add new saving account
-	 * @param acc Saving Account to save
+	 *
 	 * @return the added saving account
 	 */
-	SavingAccountDTO saveSavingAccount(SavingAccountRequest acc);
+	SavingAccountDTO saveSavingAccount(String customerId,double balance, double interestRate);
 
 	/**
 	 * Get account by id

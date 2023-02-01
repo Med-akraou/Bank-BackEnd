@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import med.sig.bank.dtos.CustomerDTO;
 import med.sig.bank.entities.Customer;
+import med.sig.bank.exceptions.CustomerAlreadyExistsException;
 import med.sig.bank.exceptions.NotFoundCustomerException;
 import med.sig.bank.mappers.CustomerMapper;
 import med.sig.bank.repositeries.CustomerRepository;
@@ -33,10 +34,13 @@ public class CustomerServiceImpl implements CustomerService {
 	 */
 	@Override
 	public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
+		if (customerRepository.findCustomerByEmail(customerDTO.getEmail())==null){
 		customerDTO.setCustomerId(UUID.randomUUID().toString());
 		log.info("saving new customer {}", customerDTO);
 		Customer customer = customerMapper.toCustomer(customerDTO);
 		return customerMapper.toCustomerDto(customerRepository.save(customer));
+		}
+		throw new CustomerAlreadyExistsException("Customer is already registered");
 	}
 
 

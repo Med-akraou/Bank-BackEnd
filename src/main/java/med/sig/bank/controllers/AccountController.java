@@ -30,12 +30,12 @@ public class AccountController {
 
 	@PostMapping("/saveCurrentAccount")
 	public CurrentAccountDTO createCurrentAccount(@RequestBody CurrentAccountRequest acc) {
-		return accountService.saveCurrentAccount(acc);
+		return accountService.saveCurrentAccount(acc.getCustomerId(),acc.getBalance(),acc.getOverDraft());
 	}
 
 	@PostMapping("/saveSavingAccount")
 	public SavingAccountDTO createSavingAccount(@RequestBody SavingAccountRequest acc) {
-		return accountService.saveSavingAccount(acc);
+		return accountService.saveSavingAccount(acc.getCustomerId(),acc.getBalance(),acc.getInterestRate());
 	}
 
 	@GetMapping("/accounts/{id}")
