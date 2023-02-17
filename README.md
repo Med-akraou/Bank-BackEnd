@@ -3,4 +3,6 @@ Digital bank allows to manage customers, accounts (saving accounts and current a
 
 Technologies: Spring boot, spring data, hibrnate, postgresql
 
-We tthree-tier architecture: Data layer, business logic, and user interface ( web controllers) 
+We fllow three-tier architecture: Data layer, business logic, and user interface ( web controllers) 
+
+I impliment unit and intergtration tests for many functionnalities.
